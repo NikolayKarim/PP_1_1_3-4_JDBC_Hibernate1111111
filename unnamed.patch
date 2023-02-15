@@ -1,0 +1,510 @@
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pom.xml b/pom.xml
+--- a/pom.xml	(revision 411e0c24ac473952d9bf74783a532b9fd4fe645e)
++++ b/pom.xml	(revision 38f9d62eb744e9745f148c48b25849477f5b96f8)
+@@ -8,16 +8,18 @@
+     <artifactId>TaskJDBC</artifactId>
+     <version>1.0-SNAPSHOT</version>
+     <build>
+-        <plugins>
+-            <plugin>
+-                <groupId>org.apache.maven.plugins</groupId>
+-                <artifactId>maven-compiler-plugin</artifactId>
+-                <configuration>
+-                    <source>17</source>
+-                    <target>17</target>
+-                </configuration>
+-            </plugin>
+-        </plugins>
++        <pluginManagement>
++            <plugins>
++                <plugin>
++                    <groupId>org.apache.maven.plugins</groupId>
++                    <artifactId>maven-compiler-plugin</artifactId>
++                    <version>3.10.1</version>
++                    <configuration>
++                        <!-- put your configurations here -->
++                    </configuration>
++                </plugin>
++            </plugins>
++        </pluginManagement>
+     </build>
+ 
+     <dependencies>
+@@ -29,13 +31,11 @@
+              <version>4.13.2</version>
+              <scope>test</scope>
+          </dependency>
+-
+-        <dependency>
+-            <groupId>mysql</groupId>
+-            <artifactId>mysql-connector-java</artifactId>
+-            <version>8.0.25</version>
+-        </dependency>
+-
++            <dependency>
++                <groupId>mysql</groupId>
++                <artifactId>mysql-connector-java</artifactId>
++                <version>8.0.32</version>
++            </dependency>
+         <dependency>
+             <groupId>org.hibernate.javax.persistence</groupId>
+             <artifactId>hibernate-jpa-2.1-api</artifactId>
+Index: src/main/java/jm/task/core/jdbc/Main.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/jm/task/core/jdbc/Main.java b/src/main/java/jm/task/core/jdbc/Main.java
+--- a/src/main/java/jm/task/core/jdbc/Main.java	(revision 411e0c24ac473952d9bf74783a532b9fd4fe645e)
++++ b/src/main/java/jm/task/core/jdbc/Main.java	(revision 38f9d62eb744e9745f148c48b25849477f5b96f8)
+@@ -1,7 +1,115 @@
+ package jm.task.core.jdbc;
+ 
++import jm.task.core.jdbc.model.User;
++
++import java.sql.*;
++
+ public class Main {
++    private static final String URL = "jdbc:mysql://localhost:3306/mydbtest";
++    private static final String USERNAME = "root";
++    private static final String PASSWORD = "Parol#23";                                                                       //URL NAME PASSWORD
++    public static  String addTotable(User user){
++        return "insert into users2(name,lastname,age) values " +
++                "('"+user.getName()+"','"+user.getLastName()+"',"+user.getAge()+")";
++    }
++    public static void setToTable(Statement statement , User user){
++        try {
++             statement.execute(addTotable(user));
++        }catch (SQLException e){
++            System.out.println("Error adding a user "+user.getName()+"!"+e.getMessage());
++        }
++    }
++                                                                            //methods for adding users
++
++    public static void showInfoAll(Statement statement) {
++        try {
++            ResultSet rs = statement.executeQuery("select * from users2");
++            while (rs.next()) {
++                String id = rs.getObject(1).toString();
++                String name = rs.getObject(2).toString();
++                String lastname = rs.getObject(3).toString();
++                String age = rs.getObject(4).toString();
++                System.out.println("id number is: " + id + "   | name is: " + name + "  |  lastName is:  " + lastname + " |   age is:" + age);
++            }
++        } catch (SQLException e) {
++            System.out.println("Showing to console is failed");
++        }
++    }
+     public static void main(String[] args) {
+-        // реализуйте алгоритм здесь
++        Connection connection;
++        User user1 = new User("Вася", "Popov", (byte) 34);
++        User user2 = new User("Genadiy", "Golovkin", (byte)40);
++        User user3 = new User("Angelina", "Joly", (byte) 45);
++        User user4 = new User("Madonna", "Shalava", (byte)80);                                                                        // four users
++
++        try {
++            Driver driver = new com.mysql.cj.jdbc.Driver();
++            DriverManager.registerDriver(driver);
++        } catch (SQLException q) {
++            System.out.println("Create driver is failed");
++        }                                                                   //creating driver
++        try {
++            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
++            Statement statement = connection.createStatement();
++            System.out.println("Data base with statements has been opened");                                                                //trying connection
++//---------------------------------------- ------------------------------------------------------------
++//            setToTable(statement, user3);                               //add user to table
++//            setToTable(statement, user4);                               //add user to table
++//                                        //add user to table
++//             showInfoAll(statement);
++
++
++
++
++
++
++
++
++//----------------------------------------------------------------------------------------------------
++//
++//           try {
++//               statement.executeUpdate("create table users2(" +
++//                       "id INT(10)not null auto_increment  primary key ," +
++//                       "name VARCHAR(64)," +
++//                       "lastname VARCHAR(64), " +
++//                       "age INT(3))");
++//           }catch (SQLException e){
++//               System.out.println("Create table is failed because "+e.getMessage());
++//           }   // create table                                                                       // creating a candidation table
++//----------------------------------------------------------------------------------------------------
++//
++//            statement.execute("insert into users2(id, name,lastname,age) values " +
++//                    "(1,'jorra', 'headov',45)");
++//            System.out.println("User с именем jarra добавлен в бд");
++//            statement.execute("insert into users2(id, name,lastname,age) values " +
++//                    "(2,'George', 'Brainoc',34)");
++//            System.out.println("User с именем George добавлен в бд");
++//            statement.execute("insert into users2(id, name,lastname,age) values " +
++//                    "(3,'Stamach', 'Tothov',63)");
++//            System.out.println("User с именем Stamach добавлен в бд");
++//            statement.execute("insert into users2(id, name,lastname,age) values " +
++//                    "(4,'Uncle', 'Auntov',23)");
++//            System.out.println("User с именем Uncle добавлен в бд");
++//                                                                                                                                          //adding users directly
++
++                  statement.executeUpdate("drop table users2");                //delete table
++//----------------------------------------------------------------------------------------------------
++
++//            Создание таблицы User(ов)
++//            Добавление 4 User(ов) в таблицу с данными на свой выбор. После каждого добавления должен быть вывод в консоль ( User с именем – name добавлен в базу данных )
++//            Получение всех User из базы и вывод в консоль ( должен быть переопределен toString в классе User)
++//            Очистка таблицы User(ов)
++//     Удаление таблицы
++//
++//
++//---------------------------------------------------------------------------------------------------------------------
++            connection.close();
++            System.out.println("Data base is closed ");
++        } catch (SQLException e) {
++            System.err.println("Connection is failed" + " " + e.getMessage());
++
++        }
++                                              // cod's end
++
+     }
+ }
+Index: src/main/java/jm/task/core/jdbc/model/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/jm/task/core/jdbc/model/User.java b/src/main/java/jm/task/core/jdbc/model/User.java
+--- a/src/main/java/jm/task/core/jdbc/model/User.java	(revision 411e0c24ac473952d9bf74783a532b9fd4fe645e)
++++ b/src/main/java/jm/task/core/jdbc/model/User.java	(revision 38f9d62eb744e9745f148c48b25849477f5b96f8)
+@@ -59,4 +59,5 @@
+     public void setAge(Byte age) {
+         this.age = age;
+     }
++
+ }
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+--- /dev/null	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
++++ b/.idea/.gitignore	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
+@@ -0,0 +1,8 @@
++# Default ignored files
++/shelf/
++/workspace.xml
++# Editor-based HTTP Client requests
++/httpRequests/
++# Datasource local storage ignored files
++/dataSources/
++/dataSources.local.xml
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+new file mode 100644
+--- /dev/null	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
++++ b/.idea/compiler.xml	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
+@@ -0,0 +1,14 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <annotationProcessing>
++      <profile name="Maven default annotation processors profile" enabled="true">
++        <sourceOutputDir name="target/generated-sources/annotations" />
++        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
++        <outputRelativeToContentRoot value="true" />
++        <module name="TaskJDBC" />
++        <module name="PP_1_1_3-4_JDBC_Hibernate" />
++      </profile>
++    </annotationProcessing>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/dataSources.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/dataSources.xml b/.idea/dataSources.xml
+new file mode 100644
+--- /dev/null	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
++++ b/.idea/dataSources.xml	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
+@@ -0,0 +1,12 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
++    <data-source source="LOCAL" name="mydbtest@localhost" uuid="e21b2326-8127-4f22-ad0b-122eccadb95a">
++      <driver-ref>mysql.8</driver-ref>
++      <synchronize>true</synchronize>
++      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
++      <jdbc-url>jdbc:mysql://localhost:3306/mydbtest</jdbc-url>
++      <working-dir>$ProjectFileDir$</working-dir>
++    </data-source>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/jarRepositories.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/jarRepositories.xml b/.idea/jarRepositories.xml
+new file mode 100644
+--- /dev/null	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
++++ b/.idea/jarRepositories.xml	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
+@@ -0,0 +1,20 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="RemoteRepositoriesConfiguration">
++    <remote-repository>
++      <option name="id" value="central" />
++      <option name="name" value="Central Repository" />
++      <option name="url" value="https://repo.maven.apache.org/maven2" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="central" />
++      <option name="name" value="Maven Central repository" />
++      <option name="url" value="https://repo1.maven.org/maven2" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="jboss.community" />
++      <option name="name" value="JBoss Community repository" />
++      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
++    </remote-repository>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
++++ b/.idea/misc.xml	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
+@@ -0,0 +1,12 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ExternalStorageConfigurationManager" enabled="true" />
++  <component name="MavenProjectsManager">
++    <option name="originalFiles">
++      <list>
++        <option value="$PROJECT_DIR$/pom.xml" />
++      </list>
++    </option>
++  </component>
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK" />
++</project>
+\ No newline at end of file
+Index: .idea/sqldialects.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/sqldialects.xml b/.idea/sqldialects.xml
+new file mode 100644
+--- /dev/null	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
++++ b/.idea/sqldialects.xml	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="SqlDialectMappings">
++    <file url="file://$PROJECT_DIR$/src/test/resources/test.sql" dialect="MySQL" />
++    <file url="PROJECT" dialect="MySQL" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
++++ b/.idea/vcs.xml	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: src/test/resources/test.sql
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/resources/test.sql b/src/test/resources/test.sql
+new file mode 100644
+--- /dev/null	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
++++ b/src/test/resources/test.sql	(revision 3aa0a31c9c4bf026aef1311179f98b8ff0c6da1d)
+@@ -0,0 +1,1 @@
++select * from users2
+\ No newline at end of file
+diff --git a/target/classes/jm/task/core/jdbc/Main.class b/target/classes/jm/task/core/jdbc/Main.class
+new file mode 100644
+index 0000000000000000000000000000000000000000..f5a24f4d252b3110ebc8bf744c82aefc88accc90
+GIT binary patch
+literal 3800
+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
+F>%V1Zv}gbT
+
+diff --git a/target/classes/jm/task/core/jdbc/dao/UserDao.class b/target/classes/jm/task/core/jdbc/dao/UserDao.class
+new file mode 100644
+index 0000000000000000000000000000000000000000..ecbd8b770873cdc938262d54098a7ae0d7aae876
+GIT binary patch
+literal 411
+zc${UBUrWO<6va<wZTHV@&S&4d7Xy2(2#z5r10Slsr)emyX(MSm@T>XY2k=9QNj7lM
+zyd3Vy@1D!OKfhn!0M@vQa2a7qu;5xSBVJpf+ZUEeL2wqY-Uw#7Rv)MKuw{GC5ybJX
+zVtYm<YYLhgT{cD1cQ!soi&`D}HlL3<K@dMVe^Ll@FQp$qu#8uS{?3$=?#k9A1f#Sp
+z8fH3ehp&6U?XIe+VeLERN()-$8K<?%g`_Ssxw8RtE(L2&cNnLt(_B21u9&)?EmJox
+znBcmfmor6=kiFFZg3nncxCsde25>J7?AZ_iR?m+bBJw)K$m<vr%TFymz=f@6j<e3(
+GJBvRqwP`y5
+
+diff --git a/target/classes/jm/task/core/jdbc/dao/UserDaoHibernateImpl.class b/target/classes/jm/task/core/jdbc/dao/UserDaoHibernateImpl.class
+new file mode 100644
+index 0000000000000000000000000000000000000000..20c0735a447cdb5759f30bcc5340088b186fd957
+GIT binary patch
+literal 1051
+zc$|%rPjAyO7{*_xU9)v#ErSgPj4{R`EfbN3ICYvtL5NP#IF#+~CRT89lF4x=@vY#5
+z#DNdMheAAY1B+<HIK=NC`}w{0qx|^!?K=@2(vvnd=#fi%E<JW>pHb^brqUcUYIwbK
+zM$K1QBp7u9nTpd{G7<VcpD1)Tf-L0foNHOsWwU8M$ehtZFim{J^N)U*Y2i<!N$5vB
+z^UrdjU-Rs(1SaK1jFJmAVAKt@KvnGKC1^d;*+sRnobyY2f|2J1Q+~;P#nady8!gj#
+zu-F;e+owFScU{;9QSscI+WiKPv9clNYLR5~LBmg@2n6q>067vlJ7KgM3-eMbdo_T)
+z-W)wMQu%?*4Ztg78RK;`4d&s(fukC45_qhvJA-2YI-wFgt-iiJ&Sp9kZ)8zy*V*{2
+zn6gGo)MC{CfA?Yjl{N1sQxO_QJO9+v9y$1DU=4mC7ZEeDx~QHbGQ_3+S7Kj~IJAtl
+zjY!Cv$X1Z8%@3hkMP#Ud1D@KNs^XSybSpykM|k6U;byIHojRp(gs)jAyk~{|`DQ6B
+zvM${$VH?OCo86+@){#xxDzPu{HR`at7Q0mnudsLMt~GBPgB^=FD9v=(=f4>Hl{Yyh
+V<G#%wptp0qDZN@#9@<m8zW@$KyI=qS
+
+diff --git a/target/classes/jm/task/core/jdbc/dao/UserDaoJDBCImpl.class b/target/classes/jm/task/core/jdbc/dao/UserDaoJDBCImpl.class
+new file mode 100644
+index 0000000000000000000000000000000000000000..a4462ef7802ba59e8cc2b4c81a345c44d4ff0c55
+GIT binary patch
+literal 1036
+zc$|%r%Wl&^6o$_@Y22nIX+tU304+th1!1X(RjNv)6;dLrECSt6?2(z^OEsQU;;mqX
+z#DWLlp%A~vhFXn9S$NK6&i~EKFaP}Y{Ra^p&~BR=^w_3tn|5q^!l-p96RD3FHJrUO
+zM$O|i5RAH>OvLFto(lDzPa|}CUh4Dcj4PSfWwWV2%8b!7Zx*|nXP;a@Rl=PGQ{N4E
+z>VC+CI^pT~WOzJ^&!YjObzcdtMZS@hj834^^J-%`;}>Rvk>hwXe!<;{C!sshN+#i8
+zu`@ImPk3yuxv&jl#4~+r_8UCJ%7!>si8w6|8h#!HAUNY3WJ%;~%xE<f`b`v>s{!on
+z73jH^k?YA!1H3YkVZ!xXfqAena9CqY40|JE%-{%st{(}WRA1koq;utqw=yp_uQ>QJ
+zKVXfPsKw~%e|ZkeFAaG&oe5tv>i<(p+hpM<fg$)~Y(yM~)kgISks&Vae<Su4iABp;
+z+lYj$iEIVgS}}xb6_KI-19)y~s)}2t(Wwa8U*V1Gg}qu~hq|S3gs)jA+%m%bVzU(H
+z**a~MupTnYWH)KkIC2ZB0{a?YqYit|V7E%)CH6MmG3MRHgk=yfN;56?<qD%;d6QK#
+U?wkApdj0E7*{L<<p_zL08<Y~Wxc~qF
+
+diff --git a/target/classes/jm/task/core/jdbc/model/User.class b/target/classes/jm/task/core/jdbc/model/User.class
+new file mode 100644
+index 0000000000000000000000000000000000000000..16d8bc6df6461c3193363b5b74b67d2534152edd
+GIT binary patch
+literal 1562
+zc$|HcZ*S626vj_WDdUea8K6VdsZ)W$I;TdH%_Vcmk|ks&PI+J81}~P@w8iMR(!|BY
+z7k&Ugl<~Q3*Fm}L%{{&6p68t3IrsMOzu$j|XqR?#l%cIG>C_fWM=aZ7F*3B1p{EL|
+ze5lZBcWiz!4a>AgM%S@NdkU?;o7z5~upak#-(rWh?f9n89oti=8iao}J~P+jp3m$7
+zGfsvOX|_3G3YBKko%t>g64oT5BgdLfY#gpwrstmq;*>dJ^F(jH`3y1oKDW7lfQUx3
+zhgwI@5P`)mx7q1*(r4~_6QH8HGcc{5>2k4;oSOfUgZyrHJTZLJ`(z9pml@+>e_%|I
+z$1*;6%teuxjYak=Jpr8HNspL+f?1Xt&BbY^z3_0YkvtR945VT6<vDRYyNq`cP?7M7
+z6nUiR#xu-&vpXGUhhnJnXcuGkqSHCHxUJloGj#{-n2RZ9#gw*16ds7=K7(QJ6{tjO
+z1uD?B0u{xwN;e9$LRp3CSB)RHehKilKV}1;?&Gay@RT)DMFs*8b~<bxRux5NeAfeC
+zQQ`wa!k2>uC)P4{&tMhUbn6!>KLSZ52vV_DQ2r)W@l^<eu)75-60AoFEJSLsWs#t@
+zbxvxleNL%X=bW_5d{t-(8jWgb<~Bg;K)4g+ZiV_NxA+R16JMewHTV*Zq~NVV9ac7C
+z^q-Xe9+%Ps=Y|x!j*_AH0MR0`E|Am7#y6pP6lAD|Q8Anz-3ERsx+eiqlOPQ#$ObN0
+z0-`2C+R${CfP_<0=z$a@l?2(5f;^Oiq>>=dp?R?cq!@v0VrGjVS`y@y6yz~Ik%4GQ
+WkbP)gF98W3yNa0$O*4M>Eu#NIHuCxa
+
+diff --git a/target/classes/jm/task/core/jdbc/service/UserService.class b/target/classes/jm/task/core/jdbc/service/UserService.class
+new file mode 100644
+index 0000000000000000000000000000000000000000..e52ce3ffcecf0f8cb06f0edddf0241a0cfb90c67
+GIT binary patch
+literal 423
+zc${UB&q~BF5XL8KZTFAv*7X^L?!~}fR|NMUC<PBy?`b-e)U=f(E%<64d;lLxOj5x@
+zbNQGrzxjrl@1M^v0NBH21Q!u(3B+6>Gx(xW>1UQpByf`KUJ0xV)xMAIxn{lR2qZ~b
+zv7S-Mnv!NliKaYEouiLYShqvp@#CQ&5G0SzUzKR?r1S#_Y?Iy4-x(okDzrHeSY)DX
+znCX-qzMlX$X;o9h^c&@^LRu9$r*&JPq%QMtYXdf1B5TGwEVH&#9PfoIV)v7w>IKJZ
+z7f#@6nyCkXj$qsRzwA?9AvYlb0yA(g4D1OZ0I+)cry)dM=dkd)gq7vbEIosBTdy5w
+IosD<mUjVdjegFUf
+
+diff --git a/target/classes/jm/task/core/jdbc/service/UserServiceImpl.class b/target/classes/jm/task/core/jdbc/service/UserServiceImpl.class
+new file mode 100644
+index 0000000000000000000000000000000000000000..d900fefed7f10e0abc663d740a3bb797b9f5d855
+GIT binary patch
+literal 1048
+zc$|%r-)_?|6vod<yJqV~JIW|*gTV$!>4va0iK|YNC=ybqXj~L_@1|Df;v|#fR^qMT
+z3W*CIfQLeyIEGbgr0v4?`Qz_r`;&kF`S}X~j^Sk!YVh2LeIE{dc!AJ3k*PGN2(_Sh
+zflz;+O$0(al&LtMC1asK@v)*xC(I(QF1VIO?uvDDDRYFQaGEf~^DivQv|!W8IAXcb
+za~TQtnSxOn50fj^N7#(C;6@aU+;LhHon0*!R&zeLI}m~(obowmil;Ff87<Sezg!vE
+z%cnfCS6yloQSscI+kTD5G~<BI)gsBtg9cxR6Cwm>1;~>W;~BzwEX+Hl?9~Vy^h)&1
+zNX0^#8v?J5WSnv{)5JVp+Hg`~O+pqcYfS%?0PRQ#o-V$=Im%`_5+7udY~671O>w{m
+ztUv>ycW2+p_G?o<j;A6r2(RuWhkfwq(~vpzgM3=)XqtV>7_CU_%Ha>d?-Y2jN^`>&
+zeORM;quc;ZSf>>!|0h1OIV=mC3qt%aymz~>RVi#i+X;s>>Q%yy6&{vNCoG~(xbI*c
+ziaZ-VfGz9BL+Co}TN<@0Y}aDDPI!%d1dpw8+pt5u0`b}z>EX8<jO~Rtd5*Db<0n*m
+Pdb=rmm8R_3UC;gk&Mdr(
+
+diff --git a/target/classes/jm/task/core/jdbc/util/Util.class b/target/classes/jm/task/core/jdbc/util/Util.class
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c67a381b4c33e90814f9a19353bad11a23b4d3e
+GIT binary patch
+literal 283
+zc$|HYy>7xl5QJy3vB5DvN{cAc5eiPC1*JhsWhF%d{rNbBbBrySGw($eDFqL}Lq+U4
+z)a**5n@=+<-R1B13}B971P{Fs{SX5}ur!6SF9dJ$ydn6ja;pi0#1#6i-lw|ylxfc7
+zF)5YIH?lI$-=J@I=0F%H*<M(A_!g?Hw8*xp616qCShFk$(MMTVO1~P{={h*e<Wa`(
+z(I$-UlnFzZ6uB(E#Cw`)W$}a-f4~j#@(I>}ooGDJp8kMN{AeL$4I1d7!y5kw&_&eL
+IADUEr1=cJ(qW}N^
+
